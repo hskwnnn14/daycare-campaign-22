@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Checks the Day Care? | Medicaid adult day care in NYC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..800,50..100&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#FFF3B0; --mint:#C8E6C9; --green:#1F6B3A; --amber:#C98400;
+  --gray:#C9C5B9; --ink:#2B2A26; --muted:#6B675E; --paper:#FFFDF6;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"DM Sans",system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:28px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+section{min-height:100vh;padding:72px 0 56px;display:flex;align-items:center;position:relative;overflow:hidden}
+section > .wrap{width:100%;position:relative;z-index:1}
+.y{background:var(--yellow)} .m{background:var(--mint)}
+.kicker{font-size:12px;line-height:16px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:12px}
+h1,h2,h3{font-family:var(--serif);font-variation-settings:"SOFT" 100;letter-spacing:-.01em}
+h1{font-size:40px;line-height:46px;margin:0 0 16px;font-weight:700}
+h2{font-size:28px;line-height:34px;margin:0 0 18px;font-weight:650}
+p{margin:0 0 16px}
+.big{font-family:var(--serif);font-size:34px;line-height:38px;font-weight:700;font-variant-numeric:lining-nums tabular-nums}
+.src{font-size:12px;line-height:16px;color:var(--muted);margin-top:14px}
+.note{font-size:14px;line-height:21px;background:rgba(201,197,185,.25);border-left:4px solid var(--gray);padding:10px 12px;margin-top:16px;border-radius:0 6px 6px 0}
+.note b{display:block;margin-bottom:2px}
+.stat{display:inline-block;background:var(--yellow);border-radius:10px;padding:12px 16px;margin:0 8px 8px 0}
+.y .stat{background:#fff}
+.m .stat{background:#fff}
+.stat .big{display:block}
+.stat .big,.stat .big span{font-family:var(--serif);font-size:34px;line-height:38px;font-weight:700}
+.stat span{font-size:14px;line-height:20px}
+button{font:inherit;font-size:16px;font-weight:700;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;transition:transform .15s var(--ease),background .2s,color .2s}
+button:hover{background:var(--ink);color:#fff}
+button:active{transform:scale(.96)}
+button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+svg text{font-family:var(--sans);fill:var(--ink)}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+
+/* scroll progress */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:100%;background:var(--amber);transform-origin:0 50%;transform:scaleX(0);z-index:20}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}.reveal.d4{transition-delay:.45s}
+
+/* hook */
+#hook h1{font-size:44px;line-height:50px}
+#hook .word{display:inline-block;opacity:0;transform:translateY(.5em);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+#hook.go .word{opacity:1;transform:none}
+.counter{color:var(--amber);font-variant-numeric:tabular-nums;display:inline-block;min-width:2.3ch}
+.counter.allowed{color:var(--green)}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;z-index:0;pointer-events:none}
+.blob.a{width:340px;height:340px;background:var(--mint);right:-120px;top:-80px;animation:float 14s ease-in-out infinite}
+.blob.b{width:220px;height:220px;background:#fff;left:-80px;bottom:-60px;animation:float 18s ease-in-out infinite reverse}
+@keyframes float{50%{transform:translate(-24px,30px) scale(1.06)}}
+.scroll-cue{margin-top:32px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.scroll-cue a{color:var(--ink)}
+.arrow{display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(6px)}}
+
+/* context loop */
+.loop{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0;position:relative}
+.node{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left;font-weight:400;transition:border-color .25s,box-shadow .25s,transform .25s var(--ease)}
+.node:hover{background:#fff;color:var(--ink);transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.node strong{display:flex;justify-content:space-between;align-items:center;font-family:var(--serif);font-size:20px}
+.node strong::after{content:"+";font-family:var(--sans);font-size:22px;transition:transform .3s var(--ease)}
+.node[aria-expanded="true"] strong::after{transform:rotate(45deg)}
+.node .more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
+.node .more > span{overflow:hidden;font-size:15px;line-height:22px}
+.node[aria-expanded="true"] .more{grid-template-rows:1fr}
+.node[aria-expanded="true"] .more > span{padding-top:8px}
+.node[aria-expanded="true"]{border-color:var(--amber);box-shadow:0 6px 0 var(--amber)}
+.loop-end{font-family:var(--serif);font-size:22px;line-height:30px;font-weight:600}
+
+/* evidence 1 */
+input[type=range]{width:100%;accent-color:var(--amber);height:28px}
+.guess-out{font-family:var(--serif);font-weight:700;font-size:26px;color:var(--amber)}
+.hide{display:none}
+.fade-in{animation:fadeIn .6s var(--ease) both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.room{display:grid;grid-template-columns:repeat(27,1fr);gap:2px;max-width:420px;margin:12px 0 4px}
+.room i{aspect-ratio:1;border-radius:50%;background:var(--green);transform:scale(0);transition:transform .3s var(--ease)}
+.room i.on{transform:scale(1)}
+.room i.over{background:var(--amber)}
+.room-cap{font-size:13px;color:var(--muted)}
+
+/* waffle + dots */
+.waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;max-width:320px}
+.waffle i{aspect-ratio:1;border-radius:3px;background:var(--gray);transition:background .3s,transform .3s var(--ease)}
+.waffle i.on{background:var(--amber);transform:scale(1.04)}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;max-width:380px}
+.dots i{aspect-ratio:1;border-radius:50%;background:var(--gray);transition:background .25s,transform .2s var(--ease)}
+.dots i.on{background:var(--amber)}
+.dots i:hover{transform:scale(1.6)}
+.legend{font-size:14px;line-height:20px;margin:10px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+.hatch{background:repeating-linear-gradient(45deg,var(--amber) 0 3px,var(--paper) 3px 6px)}
+
+/* turn */
+.compare{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+.card{background:#fff;border-radius:12px;padding:16px;border:2px solid transparent;transition:transform .35s var(--ease),opacity .35s,border-color .35s,box-shadow .35s}
+.card.active{border-color:var(--ink);transform:translateY(-4px);box-shadow:0 8px 0 var(--ink)}
+.card.dim{opacity:.45;transform:scale(.97)}
+.card h3{margin:0 0 6px;font-size:21px;line-height:26px}
+.card ul{margin:0;padding-left:18px;font-size:15px;line-height:23px}
+#pathReply{min-height:48px}
+
+/* ask */
+.checklist label{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s}
+.checklist label:hover{transform:translateX(4px)}
+.checklist input{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:2px solid var(--ink);border-radius:6px;flex:none;margin-top:2px;position:relative;background:#fff;transition:background .2s}
+.checklist input:checked{background:var(--green);border-color:var(--green);animation:pop .35s var(--ease)}
+.checklist input:checked::after{content:"";position:absolute;left:6px;top:1px;width:7px;height:13px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg)}
+.checklist label:has(input:checked) span{color:var(--muted)}
+@keyframes pop{50%{transform:scale(1.25)}}
+.meter{height:10px;background:#fff;border-radius:99px;overflow:hidden;margin:6px 0 8px;max-width:360px}
+.meter > div{height:100%;width:0;background:var(--green);border-radius:99px;transition:width .5s var(--ease)}
+.progress{font-weight:700}
+
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;line-height:18px;padding:6px 8px;border-radius:6px;opacity:0;transition:opacity .12s;z-index:30;max-width:220px}
+footer{padding:32px 0 48px;font-size:12px;line-height:18px;color:var(--muted)}
+
+@media (min-width:800px){
+  .split{display:grid;grid-template-columns:8fr 4fr;gap:32px;align-items:start}
+  .loop{grid-template-columns:repeat(3,1fr)}
+  .compare{grid-template-columns:1fr 1fr}
+  #hook h1{font-size:68px;line-height:74px}
+  h2{font-size:36px;line-height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal,#hook .word{opacity:1!important;transform:none!important}
+  .room i{transform:none}
+}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<!-- 1 HOOK -->
+<section id="hook" class="y">
+<div class="blob a"></div><div class="blob b"></div>
+<div class="wrap">
+  <div class="kicker">NYC · Medicaid social adult day care</div>
+  <h1 id="hookTitle">Your parent’s day care was allowed <span class="counter allowed" id="cAllowed">0</span> people. What if it billed for <span class="counter" id="cBilled">0</span>?</h1>
+  <p class="reveal d3">That happened at one center in Flushing. This page is for the sons and daughters who drop their parents off, read the plan letters, and want the care to stay.</p>
+  <div class="row reveal d4">
+    <button id="hookYes">My parent goes to one</button>
+    <button id="hookNo">I’m just curious</button>
+  </div>
+  <p id="hookReply" class="hide" style="font-size:16px"></p>
+  <div class="scroll-cue reveal d4"><span class="arrow">↓</span> Scroll · <a href="#evidence1">jump to the evidence</a></div>
+</div>
+</section>
+
+<!-- 2 CONTEXT -->
+<section id="context">
+<div class="wrap">
+  <div class="kicker reveal">2 · Context</div>
+  <h2 class="reveal d1">Who checks the center? The plans that get new members from it.</h2>
+  <p class="reveal d2">More than 400 centers serve about 45,000 seniors, and the program costs over $500 million a year. The state lets 35 private Medicaid plans check the same centers that bring them new members. Tap each part of the loop.</p>
+  <div class="loop">
+    <button class="node reveal d1" aria-expanded="false"><strong>1 · The center</strong><span class="more"><span>Signs seniors up, often through church and community ties, in their own language. Meals, haircuts, rides, sometimes gifts or cash.</span></span></button>
+    <button class="node reveal d2" aria-expanded="false"><strong>2 · The Medicaid plan</strong><span class="more"><span>Gets a new member from the center, pays the center, and is also the one asked to check it. 35 plans, no shared list.</span></span></button>
+    <button class="node reveal d3" aria-expanded="false"><strong>3 · The paperwork</strong><span class="more"><span>Made by the center. One senior we interviewed was pushed into a ride service he didn’t need “just to create a record.”</span></span></button>
+  </div>
+  <p class="loop-end reveal d4">Nobody outside the loop counts who actually walks in the door.</p>
+  <div class="src">Sources: NY Governor’s office, Oct. 2026; NYS Comptroller audit, Feb. 2026; author interview, Nov. 2026.</div>
+</div>
+</section>
+
+<!-- 3 EVIDENCE I -->
+<section id="evidence1" class="y">
+<div class="wrap">
+  <div class="kicker reveal">3 · Evidence I · Overbooking</div>
+  <h2 class="reveal d1">One Flushing center was allowed 323 people. On its busiest day, it billed for 530.</h2>
+  <div class="split">
+    <div class="reveal d2">
+      <div id="guessBox">
+        <p style="font-size:16px"><b>Guess first.</b> The room is licensed for 323. How many people did it bill for on its busiest day?</p>
+        <input type="range" id="guess" min="100" max="700" step="1" value="323" aria-label="Your guess">
+        <p>Your guess: <span class="guess-out" id="guessOut">323</span> people</p>
+        <button id="reveal">Show me the real number</button>
+      </div>
+      <div id="v1wrap" class="hide">
+        <svg id="v1" class="chart" viewBox="0 0 360 190" role="img" aria-label="Bar chart: allowed 323, billed 530 on peak day"></svg>
+        <div class="legend"><i style="background:var(--green)"></i>Allowed &nbsp; <i style="background:var(--amber)"></i>Billed up to limit &nbsp; <i class="hatch"></i>Billed above limit</div>
+        <p id="guessReply" style="font-size:16px"></p>
+        <p style="font-size:15px;margin:18px 0 0"><b>The same day, one dot per person billed:</b></p>
+        <div class="room" id="room"></div>
+        <div class="room-cap"><span style="color:var(--green)">●</span> first 323 fit the license &nbsp; <span style="color:var(--amber)">●</span> 207 more</div>
+      </div>
+    </div>
+    <div class="reveal d3">
+      <div class="stat"><span class="big"><span data-count="386">0</span> days</span><span>billed for more people than it was allowed</span></div>
+      <div class="note"><b>What this can’t show</b>Who was really in the room. There is no public daily attendance record. This is one center’s worst day, not an average, and it may not be typical.</div>
+    </div>
+  </div>
+  <div class="src">Source: NYS Office of the State Comptroller, audit of Medicaid social adult day care, Feb. 2026.</div>
+</div>
+</section>
+
+<!-- 3a NEIGHBORHOOD -->
+<section id="evidence1a">
+<div class="wrap">
+  <div class="kicker reveal">3a · Evidence I, zoomed out · Flushing</div>
+  <h2 class="reveal d1">In Flushing, 64 centers within a mile bill for more than 9 in 10 eligible seniors nearby.</h2>
+  <div class="split">
+    <div class="reveal d2">
+      <p style="font-size:16px">Each square is 1% of the eligible seniors who live nearby. It fills in as you scroll; tap to replay.</p>
+      <div class="waffle" id="waffle"></div>
+      <div class="legend"><i style="background:var(--amber)"></i>Billed by a nearby center (90, the floor of “more than 90%”) &nbsp; <i style="background:var(--gray)"></i>Not billed or unknown</div>
+    </div>
+    <div class="reveal d3">
+      <div class="stat"><span class="big" data-count="64">0</span><span>centers within one mile</span></div>
+      <div class="stat"><span class="big">~<span data-count="4">0</span>×</span><span>NY spending on these centers, 2018 to 2024</span></div>
+      <div class="note"><b>What this can’t show</b>Fraud by itself. Seniors may come from outside the circle, and Flushing lacks regular senior centers. The real share is above 90%; we drew 90.</div>
+    </div>
+  </div>
+  <div class="src">Source: CBS News analysis, July 2026.</div>
+</div>
+</section>
+
+<!-- 4 EVIDENCE II -->
+<section id="evidence2" class="y">
+<div class="wrap">
+  <div class="kicker reveal">4 · Evidence II · No shared blacklist</div>
+  <h2 class="reveal d1">$285 million was paid to centers after a plan had already cut them off.</h2>
+  <div class="split">
+    <div class="reveal d2">
+      <div class="row">
+        <button id="zAll" aria-pressed="true">All $2.4 billion</button>
+        <button id="zCut" aria-pressed="false">Zoom into the $285M</button>
+      </div>
+      <svg id="v2" class="chart" viewBox="0 0 360 130" role="img" aria-label="Bar showing $285M of $2.4B paid after a cut-off"></svg>
+      <div class="legend" id="v2legend"></div>
+    </div>
+    <div class="reveal d3">
+      <p style="font-size:16px">When one plan drops a center, the center can keep billing the other plans. There is no shared list.</p>
+      <div class="note"><b>What this can’t show</b>That the money was stolen. The state health department says “questionable” payments aren’t proven fraud. Who paid whom by name is not public.</div>
+    </div>
+  </div>
+  <div class="src">Source: NYS Office of the State Comptroller, audit, Feb. 2026 (plan payments 2019–2024). Zoomed view is drawn at its own scale.</div>
+</div>
+</section>
+
+<!-- 4a CRACKDOWN -->
+<section id="evidence2a">
+<div class="wrap">
+  <div class="kicker reveal">4a · The crackdown</div>
+  <h2 class="reveal d1">More than 100 of the 400-plus centers are now under investigation.</h2>
+  <div class="split">
+    <div class="reveal d2">
+      <p style="font-size:16px">Each dot is one center. <b>Hover or tap a dot.</b></p>
+      <div class="dots" id="dots"></div>
+      <div class="legend"><i style="background:var(--amber)"></i>Under investigation (100+) &nbsp; <i style="background:var(--gray)"></i>Not under investigation (300+)</div>
+    </div>
+    <div class="reveal d3">
+      <div class="stat"><span class="big">~<span data-count="100">0</span></span><span>cases sent for possible criminal charges</span></div>
+      <div class="stat"><span class="big">2027</span><span>no new centers can open until then</span></div>
+      <div class="note"><b>What this can’t show</b>Guilt. An investigation is not a finding. Gray dots aren’t “clean,” just not under investigation now. Both numbers are floors.</div>
+    </div>
+  </div>
+  <div class="src">Source: NY Governor’s office, Oct. 2026.</div>
+</div>
+</section>
+
+<!-- 5 THE TURN -->
+<section id="turn" class="m">
+<div class="wrap">
+  <div class="kicker reveal">5 · The turn</div>
+  <h2 class="reveal d1">The state may shut the whole program down. That punishes your parent, not the people who cheated.</h2>
+  <p class="reveal d2">The governor’s office decides by <b>Dec. 31, 2026</b>. Pick a path to see who it hits.</p>
+  <div class="row reveal d2">
+    <button id="pShut" aria-pressed="false">Shut it down</button>
+    <button id="pFix" aria-pressed="false">Fix it</button>
+  </div>
+  <div class="compare">
+    <div class="card reveal d3" id="cShut"><h3>Shut it down</h3><ul><li>About 45,000 seniors lose meals, rides and company</li><li>Honest centers close with the bad ones</li><li>People already charged were caught by investigators, not by the shutdown</li></ul></div>
+    <div class="card reveal d4" id="cFix"><h3>Fix it</h3><ul><li>The state licenses every center itself</li><li>Real attendance checks: count who walks in</li><li>One shared list: cut off by one plan, cut off by all</li></ul></div>
+  </div>
+  <p id="pathReply" style="font-size:16px;margin-top:14px"></p>
+</div>
+</section>
+
+<!-- 6 THE ASK -->
+<section id="ask" class="y">
+<div class="wrap">
+  <div class="kicker reveal">6 · The ask</div>
+  <h2 class="reveal d1">You can see what the state can’t: who actually shows up.</h2>
+  <div class="checklist" id="checklist">
+    <label class="reveal d1"><input type="checkbox"><span><b>Read the plan letter.</b> Compare the days billed with the days your parent actually went.</span></label>
+    <label class="reveal d2"><input type="checkbox"><span><b>Ask the center</b> for your parent’s care plan. Most audited files were missing one.</span></label>
+    <label class="reveal d3"><input type="checkbox"><span><b>If something is off,</b> report it to the NYS Office of the Medicaid Inspector General (omig.ny.gov). Your parent is not the target.</span></label>
+    <label class="reveal d4"><input type="checkbox"><span><b>Before Dec. 31,</b> tell your state representatives: license and count, don’t shut down.</span></label>
+  </div>
+  <div class="meter"><div id="meter"></div></div>
+  <p class="progress" id="progress">0 of 4 done</p>
+  <button id="share">Copy link to share with family</button>
+  <span id="shareMsg" style="font-size:14px;margin-left:8px"></span>
+</div>
+</section>
+
+<footer><div class="wrap">
+Version 2 · Hailey Kwon, Parsons · Sources: NYS Office of the State Comptroller audit (Feb. 2026); NY Governor’s office (Oct. 2026); U.S. Attorney / IRS-CI charges (2026); CBS News analysis (July 2026); author interviews (Nov. 2026). Numbers marked “more than” are drawn at their stated minimum.
+</div></footer>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const C={green:"#1F6B3A",amber:"#C98400",gray:"#C9C5B9",ink:"#2B2A26",paper:"#FFFDF6",muted:"#6B675E"};
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const svgNS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent,text){const e=document.createElementNS(svgNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;parent.appendChild(e);return e}
+function defs(svg){const d=el("defs",{},svg);const p=el("pattern",{id:svg.id+"h",width:6,height:6,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"},d);el("rect",{width:6,height:6,fill:C.paper},p);el("rect",{width:3,height:6,fill:C.amber},p);return "url(#"+svg.id+"h)"}
+const easeOut=t=>1-Math.pow(1-t,3);
+function tween(dur,fn,delay=0){if(reduce){fn(1);return}setTimeout(()=>{const t0=performance.now();(function f(now){const t=Math.min(1,(now-t0)/dur);fn(easeOut(t));if(t<1)requestAnimationFrame(f)})(t0)},delay)}
+function growRect(r,w,dur=900,delay=0){r.setAttribute("width",0);tween(dur,t=>r.setAttribute("width",w*t),delay)}
+function countUp(node,to,dur=1200,delay=0){tween(dur,t=>node.textContent=Math.round(to*t).toLocaleString(),delay)}
+
+/* tooltip */
+const tip=$("tip");
+function showTip(e,t){tip.textContent=t;tip.style.opacity=1;const p=e.touches?e.touches[0]:e;tip.style.left=Math.min(p.clientX+12,innerWidth-230)+"px";tip.style.top=(p.clientY+12)+"px"}
+function hideTip(){tip.style.opacity=0}
+function hover(node,text){node.addEventListener("mousemove",e=>showTip(e,text));node.addEventListener("mouseleave",hideTip);node.addEventListener("click",e=>showTip(e,text));node.style.cursor="pointer"}
+document.addEventListener("scroll",hideTip,{passive:true});
+
+/* scroll progress bar */
+const bar=$("progressBar");
+function onScroll(){const h=document.documentElement;bar.style.transform=`scaleX(${h.scrollTop/(h.scrollHeight-h.clientHeight)})`}
+document.addEventListener("scroll",onScroll,{passive:true});
+
+/* reveal on scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll(".reveal").forEach(n=>io.observe(n));
+
+/* count-up stats when visible */
+const cio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){countUp(e.target,+e.target.dataset.count,1300,250);cio.unobserve(e.target)}}),{threshold:.6});
+document.querySelectorAll("[data-count]").forEach(n=>cio.observe(n));
+
+/* hook: word-by-word headline + counters */
+(function(){
+  const h=$("hookTitle");
+  // wrap plain-text words in spans, keep counters intact
+  [...h.childNodes].forEach(n=>{
+    if(n.nodeType===3){const frag=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w)){frag.appendChild(document.createTextNode(w))}else{const s=document.createElement("span");s.className="word";s.textContent=w;frag.appendChild(s)}});h.replaceChild(frag,n)}
+    else{n.classList.add("word")}
+  });
+  [...h.querySelectorAll(".word")].forEach((w,i)=>w.style.transitionDelay=(i*0.06)+"s");
+  requestAnimationFrame(()=>$("hook").classList.add("go"));
+  countUp($("cAllowed"),323,1100,500);
+  countUp($("cBilled"),530,1600,1100);
+  setTimeout(()=>document.querySelectorAll("#hook .reveal").forEach(n=>n.classList.add("in")),200);
+})();
+$("hookYes").onclick=()=>{$("hookReply").textContent="Then you can see something the state can’t. Keep scrolling: the last screen is a 4-step checklist for you.";$("hookReply").className="fade-in"};
+$("hookNo").onclick=()=>{$("hookReply").textContent="Fair. About 45,000 New York seniors use these centers. Scroll to see why one room was billed for 530 people.";$("hookReply").className="fade-in"};
+
+/* context loop */
+document.querySelectorAll(".node").forEach(n=>n.onclick=()=>n.setAttribute("aria-expanded",n.getAttribute("aria-expanded")==="true"?"false":"true"));
+
+/* evidence 1 */
+$("guess").oninput=e=>$("guessOut").textContent=e.target.value;
+const room=$("room");for(let i=0;i<530;i++){const d=document.createElement("i");if(i>=323)d.classList.add("over");room.appendChild(d)}
+function fillRoom(){const kids=[...room.children];kids.forEach(k=>k.classList.remove("on"));
+  if(reduce){kids.forEach(k=>k.classList.add("on"));return}
+  kids.forEach((k,i)=>setTimeout(()=>k.classList.add("on"),300+i*(i<323?3:6)))}
+function drawV1(g){
+  const s=$("v1");s.innerHTML="";const hp=defs(s);
+  const X=v=>110+v*(230/600), W=v=>v*(230/600);
+  el("text",{x:0,y:46,"font-size":13},s,"Allowed");
+  growRect(el("rect",{x:X(0),y:30,width:0,height:26,fill:C.green,rx:3},s),W(323),800);
+  const t1=el("text",{x:X(323)+6,y:48,"font-size":13,"font-weight":700,opacity:0},s,"323");
+  el("text",{x:0,y:98,"font-size":13},s,"Billed (peak day)");
+  const a=el("rect",{x:X(0),y:82,width:0,height:26,fill:C.amber,rx:3},s);growRect(a,W(323),800,300);
+  const b=el("rect",{x:X(323)+2,y:82,width:0,height:26,fill:hp,rx:3},s);growRect(b,W(207)-2,900,1100);
+  const t2=el("text",{x:X(530)+6,y:100,"font-size":13,"font-weight":700,opacity:0},s,"530");
+  hover(a,"Billed up to the 323 limit");hover(b,"207 people billed above the limit");
+  const ln=el("line",{x1:X(323),x2:X(323),y1:18,y2:120,stroke:C.ink,"stroke-dasharray":"3 3",opacity:0},s);
+  const lt=el("text",{x:X(323),y:12,"font-size":11,"text-anchor":"middle",opacity:0},s,"limit 323");
+  const gl=el("line",{x1:X(g),x2:X(g),y1:125,y2:150,stroke:C.ink,"stroke-width":2,opacity:0},s);
+  const gt=el("text",{x:X(g),y:166,"font-size":12,"text-anchor":"middle",opacity:0},s,"your guess: "+g);
+  const ot=el("text",{x:X(426),y:186,"font-size":11,"text-anchor":"middle",fill:C.muted,opacity:0},s,"207 more than allowed");
+  const show=(n,d)=>tween(400,t=>n.setAttribute("opacity",t),d);
+  show(t1,800);show(ln,700);show(lt,700);show(gl,200);show(gt,200);show(t2,2000);show(ot,2100);
+}
+$("reveal").onclick=()=>{
+  const g=+$("guess").value;$("v1wrap").classList.remove("hide");$("v1wrap").classList.add("fade-in");drawV1(g);fillRoom();
+  const d=530-g;
+  $("guessReply").textContent=d>0?`The real number was ${d} higher than your guess.`:d<0?`You guessed ${-d} higher than the real number. Most people guess lower.`:`Exactly right.`;
+  $("reveal").textContent="Guess again";
+};
+
+/* 3a waffle: auto-fill on scroll, tap to replay */
+const w=$("waffle");for(let i=0;i<100;i++)w.appendChild(document.createElement("i"));
+function fillW(){const k=[...w.children];k.forEach(c=>c.classList.remove("on"));k.forEach((c,i)=>{if(i<90)setTimeout(()=>c.classList.add("on"),reduce?0:150+i*18)})}
+new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){fillW();o.disconnect()}}),{threshold:.5}).observe(w);
+w.onclick=fillW;w.style.cursor="pointer";
+
+/* evidence 2 */
+let v2zoom=null;
+function drawV2(zoom){
+  if(zoom===v2zoom)return;v2zoom=zoom;
+  const s=$("v2");s.innerHTML="";const hp=defs(s);const W=300;
+  const fadeText=(n,d)=>{n.setAttribute("opacity",0);tween(400,t=>n.setAttribute("opacity",t),d)};
+  if(!zoom){
+    const tot=2400,cut=285,X=v=>v*W/tot;
+    fadeText(el("text",{x:0,y:20,"font-size":12},s,"All plan payments 2019–2024: $2.4 billion"),0);
+    const a=el("rect",{x:0,y:32,width:0,height:40,fill:C.gray,rx:3},s);growRect(a,X(tot-cut)-2,900);
+    const b=el("rect",{x:X(tot-cut),y:32,width:0,height:40,fill:C.amber,rx:3},s);growRect(b,X(cut),500,900);
+    fadeText(el("text",{x:X(tot-cut)/2,y:57,"font-size":12,"text-anchor":"middle"},s,"$2.115B"),600);
+    fadeText(el("text",{x:W+6,y:57,"font-size":13,"font-weight":700},s,"$285M"),1300);
+    fadeText(el("text",{x:0,y:100,"font-size":12,fill:C.muted},s,"About 12% was paid after a plan had cut the center off."),1400);
+    hover(a,"$2.115B paid while no plan had cut the center off");hover(b,"$285M paid after at least one plan had cut the center off");
+    $("v2legend").innerHTML='<i style="background:var(--gray)"></i>Other payments &nbsp; <i style="background:var(--amber)"></i>Paid after a cut-off';
+  }else{
+    const tot=285,one=28.5,X=v=>v*W/tot;
+    fadeText(el("text",{x:0,y:20,"font-size":12},s,"The $285M paid after a cut-off"),0);
+    const a=el("rect",{x:0,y:32,width:0,height:40,fill:C.amber,rx:3},s);growRect(a,X(tot-one)-2,900);
+    const b=el("rect",{x:X(tot-one),y:32,width:0,height:40,fill:hp,rx:3},s);growRect(b,X(one),500,900);
+    fadeText(el("text",{x:X(tot-one)/2,y:57,"font-size":12,"text-anchor":"middle"},s,"$256.5M, other centers"),600);
+    fadeText(el("text",{x:W+6,y:57,"font-size":13,"font-weight":700},s,"$28.5M"),1300);
+    fadeText(el("text",{x:0,y:100,"font-size":12,fill:C.muted},s,"$28.5M went to one center cut off for fraud."),1400);
+    hover(a,"$256.5M to other cut-off centers");hover(b,"$28.5M to one center cut off for fraud");
+    $("v2legend").innerHTML='<i style="background:var(--amber)"></i>Other cut-off centers &nbsp; <i class="hatch"></i>One center cut off for fraud';
+  }
+  $("zAll").setAttribute("aria-pressed",!zoom);$("zCut").setAttribute("aria-pressed",zoom);
+}
+$("zAll").onclick=()=>drawV2(false);$("zCut").onclick=()=>drawV2(true);
+new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){drawV2(false);o.disconnect()}}),{threshold:.4}).observe($("v2"));
+
+/* 4a dots: light up on scroll */
+const dots=$("dots");
+for(let i=0;i<400;i++){const d=document.createElement("i");hover(d,i<100?"A center under investigation (one of 100+)":"A center not under investigation now (one of 300+)");dots.appendChild(d)}
+new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){
+  // keep the amber block readable: color the first 100 in reading order, but light them in random sequence
+  const picks=[...Array(100).keys()].sort(()=>Math.random()-.5);
+  picks.forEach((idx,n)=>setTimeout(()=>dots.children[idx].classList.add("on"),reduce?0:300+n*20));
+  o.disconnect()}}),{threshold:.4}).observe(dots);
+
+/* turn */
+function path(p){
+  $("pShut").setAttribute("aria-pressed",p==="shut");$("pFix").setAttribute("aria-pressed",p==="fix");
+  $("cShut").classList.toggle("active",p==="shut");$("cFix").classList.toggle("active",p==="fix");
+  $("cShut").classList.toggle("dim",p==="fix");$("cFix").classList.toggle("dim",p==="shut");
+  const r=$("pathReply");r.classList.remove("fade-in");void r.offsetWidth;r.classList.add("fade-in");
+  r.textContent=p==="shut"?"Shutting down hits the 45,000 seniors first. The people charged in the $120M Queens and $68M Brooklyn cases were found by investigators, not by closing centers.":"Fixing it keeps your parent’s care and takes away what the cheating depends on: nobody outside the loop counting.";
+}
+$("pShut").onclick=()=>path("shut");$("pFix").onclick=()=>path("fix");
+
+/* ask */
+const boxes=[...document.querySelectorAll("#checklist input")];
+boxes.forEach(b=>b.onchange=()=>{const n=boxes.filter(x=>x.checked).length;$("meter").style.width=(n*25)+"%";$("progress").textContent=n===4?"4 of 4 done. Thank you.":`${n} of 4 done`});
+$("share").onclick=()=>{navigator.clipboard?.writeText(location.href).then(()=>$("shareMsg").textContent="Link copied.",()=>$("shareMsg").textContent=location.href)};
+</script>
+</body>
+</html>
